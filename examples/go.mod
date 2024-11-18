@@ -6,7 +6,8 @@ require (
 	github.com/K-Phoen/grabana v0.22.1
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/rs/zerolog v1.32.0
-	github.com/goplugin/wasp v0.4.4-0.20240218132337-09104882c61f
+	github.com/goplugin/wasp v0.0.2
+	//github.com/goplugin/wasp v0.4.4-0.20240218132337-09104882c61f
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/ratelimit v0.3.0
 	nhooyr.io/websocket v1.8.10
