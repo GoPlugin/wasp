@@ -22,6 +22,7 @@ Protocol-agnostic load testing library for `Go`
 - Easy to reuse any custom client `Go` code
 - Easy to grasp
 - Have slim codebase (500-1k loc)
+- No test harness or CLI, easy to integrate and run with plain `go test`
 - Have predictable performance footprint when tested with protocol mocks
 - Easy to create synthetic or user-based scenarios
 - Scalable in `k8s` without complicated configuration or vendored UI interfaces
@@ -32,6 +33,7 @@ We are using `nix` for deps, see [installation](https://nixos.org/manual/nix/sta
 ```bash
 nix develop
 ```
+
 
 ## Run example tests with Grafana + Loki
 ```bash
@@ -61,8 +63,11 @@ Remove environment:
 make stop
 ```
 
-## Tutorial
-Check [tutorial](./TUTORIAL.md) for more examples and project overview
+## Test Layout and examples
+Check [examples](examples/README.md) to understand what is the easiest way to structure your tests, run them both locally and remotely, at scale, inside `k8s`
+
+## How it works
+Check this [doc](./HOW_IT_WORKS.md) for more examples and project overview
 
 ## Run pyroscope test
 ```
@@ -78,7 +83,9 @@ You can also use `trace.out` in the root folder with `Go` default tracing UI
 ## Loki debug
 You can check all the messages the tool sends with env var `WASP_LOG_LEVEL=trace`
 
-If Loki client fail to deliver a batch test will proceed, if you experience Loki issues, consider setting `Timeout` in `LokiConfig` or set `IgnoreErrors: false` to fail the test on any error
+If Loki client fail to deliver a batch test will proceed, if you experience Loki issues, consider setting `Timeout` in `LokiConfig` or set `MaxErrors: 10` to return an error after N Loki errors
+
+`MaxErrors: -1` can be used to ignore all the errors
 
 Default Promtail settings are:
 ```
@@ -87,7 +94,7 @@ Default Promtail settings are:
     URL:                     os.Getenv("LOKI_URL"),
     Token:                   os.Getenv("LOKI_TOKEN"),
     BasicAuth:               os.Getenv("LOKI_BASIC_AUTH"),
-    IgnoreErrors:            true,
+    MaxErrors:               10,
     BatchWait:               5 * time.Second,
     BatchSize:               500 * 1024,
     Timeout:                 20 * time.Second,
@@ -100,6 +107,6 @@ Default Promtail settings are:
 ```
 If you see errors like
 ```
-12:45PM ERR Malformed promtail log message, skipping Line=["level",{},"component","client","host","...","msg","batch add err","tenant","","error",{}]
+ERR Malformed promtail log message, skipping Line=["level",{},"component","client","host","...","msg","batch add err","tenant","","error",{}]
 ```
 Try to increase `MaxStreams` even more or check your `Loki` configuration
